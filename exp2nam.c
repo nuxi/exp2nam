@@ -146,6 +146,7 @@ static EC_GROUP *convert_group(const EC_GROUP *group)
 {
     EC_GROUP *tgroup;
     unsigned char *der = NULL;
+    unsigned char *oder = NULL;
     int len;
     int flag;
 
@@ -169,14 +170,17 @@ static EC_GROUP *convert_group(const EC_GROUP *group)
 
     EC_GROUP_free(tgroup);
 
+    /* d2i_ECPKParameters() tampers with its input parameter */
+    oder = der;
     tgroup = d2i_ECPKParameters(NULL, (const unsigned char **)&der, len);
     if (tgroup == NULL)
     {
         ERR_print_errors(err);
+        OPENSSL_free(oder);
         return NULL;
     }
 
-    /* XXX memory leak w/ der, system is uppity if I call OPENSSL_free() on it */
+    OPENSSL_free(oder);
     return tgroup;
 }
 
