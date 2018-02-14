@@ -13,3 +13,4 @@ foo.pub - public key in OpenSSH format
 nistp256 = NIST P-256 (aka prime256v1)
 nistp384 = NIST P-384 (aka secp384r1)
 nistp521 = NIST P-521 (aka secp521r1)
+pkcs8    = Same as nistp256 but in PKCS#8 format
