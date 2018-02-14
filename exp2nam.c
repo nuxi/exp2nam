@@ -43,6 +43,7 @@
 #include <openssl/pem.h>
 
 static BIO *err;
+static int der;
 
 static EC_KEY *load_key(const char *infile)
 {
@@ -83,6 +84,7 @@ static EC_KEY *load_key(const char *infile)
             BIO_free(in);
             return NULL;
         }
+        der = 1;
     }
 
     rc = EC_KEY_check_key(key);
@@ -328,6 +330,12 @@ static int print_key(EC_KEY *key)
 {
     BIO *out = NULL;
 
+    if (der == 1 && isatty(STDOUT_FILENO) == 1)
+    {
+        BIO_printf(err, "Cowardly refusing to write DER format to terminal\n");
+        return 0;
+    }
+
     out = BIO_new(BIO_s_file());
     if (out == NULL)
     {
@@ -337,7 +345,24 @@ static int print_key(EC_KEY *key)
 
     BIO_set_fp(out, stdout, BIO_NOCLOSE);
 
-    PEM_write_bio_ECPrivateKey(out, key, NULL, NULL, 0, NULL, NULL);
+    if (der == 1)
+    {
+        if (i2d_ECPrivateKey_bio(out, key) != 2)
+        {
+            ERR_print_errors(err);
+            BIO_free(out);
+            return 0;
+        }
+    }
+    else
+    {
+        if (PEM_write_bio_ECPrivateKey(out, key, NULL, NULL, 0, NULL, NULL) == 0)
+        {
+            ERR_print_errors(err);
+            BIO_free(out);
+            return 0;
+        }
+    }
 
     BIO_free(out);
     return 1;

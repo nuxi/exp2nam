@@ -1,2 +1,4 @@
 *.o
 exp2nam
+tags
+.*.swp

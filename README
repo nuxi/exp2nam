@@ -7,9 +7,9 @@ possible and decided to write a tool that does it. This builds against
 OpenSSL 1.0.x and OpenSSL 1.1.x. I may try to get this integrated into the
 OpenSSL command line tools some day.
 
-The program supports input in both PEM and DER format although the output
-will always be in PEM format because it just prints to stdout and DER is a
-binary format that will corrupt your terminal.
+The program supports input in both PEM and DER format. The program will
+output to whatever format the input was in. If the input was DER the output
+must be redirect, the program will not print binary data to your terminal.
 
 Why would you want to do this?
 
